@@ -6,8 +6,17 @@ export const videoPlayerInit = () => {
     const videoTimePassed = document.querySelector('.video-time__passed');
     const videoProgress = document.querySelector('.video-progress');
     const videoTimeTotal = document.querySelector('.video-time__total');
+    const videoVolume = document.querySelector('.video-volume');
+    const videoIconDown = document.querySelector('.video-icon-down');
+    const videoIconUp = document.querySelector('.video-icon-up');
+    const videoFullscreen = document.querySelector('.video-fullscreen');
 
     console.dir(videoPlayer);
+
+    videoFullscreen.addEventListener('click', () => {
+        videoPlayer.requestFullscreen();
+    });
+
     const toggleIcon = () => { // функция меняющая иконки play и pause
         if (videoPlayer.paused) {
             videoButtonPlay.classList.remove('fa-pause');
@@ -18,7 +27,8 @@ export const videoPlayerInit = () => {
         }
     };
 
-    const tooglePlay = () => { // функция запускающая и останавливающая плеер
+    const tooglePlay = (event) => { // функция запускающая и останавливающая плеер
+        event.preventDefault();
         if (videoPlayer.paused) {
             videoPlayer.play(); // по клику на видеоплеер запускаем видео
         } else {
@@ -34,9 +44,33 @@ export const videoPlayerInit = () => {
 
     const addZero = n => n < 10 ? '0' + n : n; // функция добавленияноля к числу
 
+    const changeValue = () => { // функция изменения звука
+        const valueVolume = videoVolume.value; 
+        videoPlayer.volume = valueVolume / 100;
+    }
+
+    const controlSound = () => {
+        // const volumeSound = videoVolume.value;
+        if (videoPlayer.muted) {
+            videoPlayer.muted = false;
+            videoPlayer.volume = 0.5;
+        } else {
+            videoPlayer.volume = 0;
+            videoPlayer.muted = true;
+        }
+    };
+    const maxSound = () => {
+        videoPlayer.muted = false;
+        videoPlayer.volume = 1;
+    };
+
+    videoIconDown.addEventListener('click', controlSound);
+    videoIconUp.addEventListener('click', maxSound);
+    
+
     videoPlayer.addEventListener('click', tooglePlay); // по клику на видеоплеер выполняем функцию "tooglePlay" 
     videoButtonPlay.addEventListener('click', tooglePlay); // по клику на кноплу play выполняем функцию "tooglePlay"
-
+    
     videoPlayer.addEventListener('play', toggleIcon); // по событию play выполняем функцию  "toggleIcon"
     videoPlayer.addEventListener('pause', toggleIcon); // по событию pause выполняем функцию  "toggleIcon"
 
@@ -59,11 +93,18 @@ export const videoPlayerInit = () => {
         
         videoTimeTotal.textContent = minuteTotal + ':' + addZero(secondTotal); // выводим конечное кол-во минут, секунд и добавляем ноль к секундам
 
-        videoProgress.addEventListener('change', () => {
+        videoProgress.addEventListener('input', () => {
             const duration = videoPlayer.duration; // заносим в переменную время окончания видео
             const value = videoProgress.value; // Записываем в переменную текущее значение шкалы времени
             videoPlayer.currentTime = (value * duration) / 100; // устанавливаем значение в процентах для переключения видео кликнув по шкале времени
         });
     });
 
+    videoVolume.addEventListener('input', changeValue); // при изменении ползунка звука, выполняем функцию "changeValue"
+
+    videoPlayer.addEventListener('volumechange', () => { // функция изменения шкалы звука при fullscreen экране
+        videoVolume.value = Math.round(videoPlayer.volume * 100);
+    });
+
+    changeValue();
 };
