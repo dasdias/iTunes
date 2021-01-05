@@ -9,18 +9,23 @@ const playerBtn = document.querySelectorAll('.player-btn');
 const playerBlock = document.querySelectorAll('.player-block');
 const temp = document.querySelector('.temp');
 
+
+const stopVideoPlayer = videoPlayerInit();
+const stopRadioPlayer = radioPlayerInit();
+const stopMusicPlayer = musicPlayerInit();
+
 const deactivationPlayer = () => {  // убираем заголовок и класс "active" 
     temp.style.display = 'none';
     playerBtn.forEach( item => item.classList.remove('active'));
     playerBlock.forEach( item => item.classList.remove('active'));
+
+    stopVideoPlayer();
+    stopRadioPlayer();
+    stopMusicPlayer();
 };
 
 playerBtn.forEach((btn, i) => btn.addEventListener('click', () => { // На кнопки навешиваем событие "клик"
-deactivationPlayer(); // вызываем функцию убирающую заголовок и классы "active"
-btn.classList.add('active'); // по клику на кнопку добавляем ей класс "active"
-playerBlock[i].classList.add('active'); // Обращаемся к элементу через индекс и добавляем ему класс "active"
+    deactivationPlayer(); // вызываем функцию убирающую заголовок и классы "active"
+    btn.classList.add('active'); // по клику на кнопку добавляем ей класс "active"
+    playerBlock[i].classList.add('active'); // Обращаемся к элементу через индекс и добавляем ему класс "active"
 }));
-
-radioPlayerInit();
-musicPlayerInit();
-videoPlayerInit();

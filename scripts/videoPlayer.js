@@ -1,4 +1,5 @@
 'use strict';
+import {addZero} from './supScript.js'; // импортируем функцию addZero
 export const videoPlayerInit = () => {
     const videoPlayer = document.querySelector('.video-player');
     const videoButtonPlay = document.querySelector('.video-button__play');
@@ -10,6 +11,9 @@ export const videoPlayerInit = () => {
     const videoIconDown = document.querySelector('.video-icon-down');
     const videoIconUp = document.querySelector('.video-icon-up');
     const videoFullscreen = document.querySelector('.video-fullscreen');
+
+
+let currentVideoVolume = videoPlayer.volume; // переменная для получения текущего значения звука
 
     console.dir(videoPlayer);
 
@@ -42,29 +46,33 @@ export const videoPlayerInit = () => {
         videoPlayer.currentTime = 0; // обнуляем текущее время
     };
 
-    const addZero = n => n < 10 ? '0' + n : n; // функция добавленияноля к числу
+    // const addZero = n => n < 10 ? '0' + n : n; // функция добавленияноля к числу
 
     const changeValue = () => { // функция изменения звука
         const valueVolume = videoVolume.value; 
         videoPlayer.volume = valueVolume / 100;
-    }
+    };
 
-    const controlSound = () => {
-        // const volumeSound = videoVolume.value;
-        if (videoPlayer.muted) {
-            videoPlayer.muted = false;
-            videoPlayer.volume = 0.5;
-        } else {
-            videoPlayer.volume = 0;
-            videoPlayer.muted = true;
+    const minSound = () => { // функция отключения звука и определения текущего положения громкости звука
+        if (videoPlayer.volume) { // если у видео плеера звук не равен "0" выполняем код
+            currentVideoVolume = videoPlayer.volume; // записываем в переменную текущую громкость
+            videoPlayer.volume = 0; // устанавливаем громкость на ноль
+        } else { 
+            videoPlayer.volume = currentVideoVolume; // иначе записываем громкость из переменной currentVideoVolume
         }
     };
     const maxSound = () => {
-        videoPlayer.muted = false;
-        videoPlayer.volume = 1;
+        if (videoPlayer.volume !== 1) { // если у видео плеера звук не равен "1" выполняем код
+            currentVideoVolume = videoPlayer.volume; // записываем в переменную текущую громкость
+            videoPlayer.volume = 1; // устанавливаем громкость на "1"
+        } else { 
+            videoPlayer.volume = currentVideoVolume; // иначе в видео плеер записываем громкость из переменной currentVideoVolume
+        }
+        // videoPlayer.muted = false;
+        // videoPlayer.volume = 1;
     };
 
-    videoIconDown.addEventListener('click', controlSound);
+    videoIconDown.addEventListener('click', minSound);
     videoIconUp.addEventListener('click', maxSound);
     
 
@@ -107,4 +115,9 @@ export const videoPlayerInit = () => {
     });
 
     changeValue();
+
+    return () => {
+        videoPlayer.pause();
+        toggleIcon();
+    };
 };
